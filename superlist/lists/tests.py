@@ -37,16 +37,8 @@ class HomePageTest(TestCase):
 		request.POST['item_text'] = 'A new list item'
 		response = home_page(request)
 		self.assertEqual(response.status_code, 302)
-		self.assertEqual(response['location'], '/')
+		self.assertEqual(response['location'], '/lists/the-only-list-in-the-world/')
 	
-	def test_home_page_display_all_list_item(self):
-		Item.objects.create(text='Item 1')
-		Item.objects.create(text='Item 2')
-
-		request = HttpRequest()
-		response = home_page(request)
-		self.assertIn('Item 1', response.content.decode())
-		self.assertIn('Item 2', response.content.decode())
 
 class ItemModelTest(TestCase):
 
@@ -66,3 +58,16 @@ class ItemModelTest(TestCase):
 		second_saved_item = saved_item[1]
 		self.assertEqual(first_saved_item.text, 'The first ever list item')
 		self.assertEqual(second_saved_item.text, 'Item the second')
+
+class ListViewTest(TestCase):
+	"""docstring for ListViewTest"""
+	def test_uses_list_template(self):
+		response = self.client.get('/lists/the-only-list-in-the-world/')
+		self.assertTemplateUsed(response, 'list.html')
+
+	def test_display_all_items(self):
+		Item.objects.create(text='Item 1')
+		Item.objects.create(text='Item 2')
+		response = self.client.get('/lists/the-only-list-in-the-world/')
+		self.assertContains(response, 'Item 1')
+		self.assertContains(response, 'Item 2')	
