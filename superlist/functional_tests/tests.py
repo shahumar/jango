@@ -1,8 +1,9 @@
+from django.test import LiveServerTestCase
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 import unittest
 
-class NewVisitorTest(unittest.TestCase):
+class NewVisitorTest(LiveServerTestCase):
 	"""docstring for NewVisitorTest"""
 
 	def setUp(self):
@@ -21,7 +22,7 @@ class NewVisitorTest(unittest.TestCase):
 	def test_can_start_a_list_and_retrieve_it_latter(self):
 		#edita heard about cool new online to do app she goes
 		#to check out its homepage
-		self.browser.get('http://localhost:8000')
+		self.browser.get(self.live_server_url)
 
 		#she notice the page title and header mention to-do lists
 
@@ -58,6 +59,3 @@ class NewVisitorTest(unittest.TestCase):
 		# She visits that URL - her to-do list is still there.
 		# Satisfied, she goes back to sleep
 		self.fail('Tests finished')
-
-if __name__ == '__main__':
-	unittest.main()
