@@ -3,12 +3,15 @@ from django.utils.html import escape
 from django.shortcuts import render
 from django.test import TestCase
 from django.http import HttpRequest
+from django.template.loader import render_to_string
 
 from lists.views import home_page
 from lists.models import Item, List
+from lists.forms import ItemForm
 
 class HomePageTest(TestCase):
-
+    maxDiff = None
+    
     def test_home_page_can_save_post_request(self):
         response = self.client.post('/lists/new',
                 data = {'item_text': 'A new list item'}
@@ -24,7 +27,10 @@ class HomePageTest(TestCase):
     def test_home_page_return_correct_html(self):
         request = HttpRequest()
         response = home_page(request)
-        self.assertIn('To-Do lists', response.content.decode())
+        form = ItemForm()
+        raise Exception(form.fields.get('text'))
+        expected_html = render_to_string('home.html', {'form': form})
+        self.assertContains(form.fields.text, expected_html)
 
     def test_home_page_only_save_item_when_necessary(self):
         request = HttpRequest()
@@ -37,6 +43,14 @@ class HomePageTest(TestCase):
                )
         new_list = List.objects.first()
         self.assertRedirects(response, '/lists/%d/' % (new_list.id,))
+
+    def test_home_page_renders_home_template(self):
+        response = self.client.get('/')
+        self.assertTemplateUsed(response, 'home.html')
+
+    def test_home_page_uses_item_form(self):
+        response = self.client.get('/')
+        self.assertIsInstance(response.context['form'], ItemForm)
 
 
 class ListViewTest(TestCase):
