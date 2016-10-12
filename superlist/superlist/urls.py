@@ -23,5 +23,6 @@ urlpatterns = [
     url(r'^$', home_page, name='home'),
     url(r'^lists/', include('lists.urls'), name='view_list'),
     url(r'^admin/', admin.site.urls),
+    url(r'^accounts/', include('accounts.urls'))
 
 ]
